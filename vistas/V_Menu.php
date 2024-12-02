@@ -38,6 +38,8 @@ if (empty($opcionesMenu)) {
                                 href="<?= htmlspecialchars($opcion['url'], ENT_QUOTES, 'UTF-8') ?>" 
                                 <?php if ($opcion['nombre'] === 'Usuarios') : ?>
                                     onclick="obtenerVista('Usuarios', 'getVistaFiltros', 'capaContenido')"
+                                <?php elseif ($opcion['nombre'] === 'Menu') : ?>
+                                    onclick="obtenerVista('Menu', 'mostrarMenu', 'capaContenido')"
                                 <?php endif; ?>>
                                 <?= htmlspecialchars($opcion['nombre'], ENT_QUOTES, 'UTF-8') ?>
                                 </a>
@@ -55,6 +57,8 @@ if (empty($opcionesMenu)) {
                                             href="<?= htmlspecialchars($submenu['url'], ENT_QUOTES, 'UTF-8') ?>" 
                                             <?php if ($submenu['nombre'] === 'Usuarios') : ?>
                                                 onclick="obtenerVista('Usuarios', 'getVistaFiltros', 'capaContenido')"
+                                            <?php elseif ($submenu['nombre'] === 'Menu') : ?>
+                                             onclick="obtenerVista('Opciones', 'mostrarOpciones', 'capaContenido')"
                                             <?php endif; ?>>
                                             <?= htmlspecialchars($submenu['nombre'], ENT_QUOTES, 'UTF-8') ?>
                                             </a>
@@ -65,9 +69,8 @@ if (empty($opcionesMenu)) {
                         <?php endif; ?>
                     <?php endif; ?>
                 <?php endforeach; ?>
-                <button class="btn btn-primary position-absolute top-0 end-0 me-2 mt-2" onclick="obtenerVista('Menu', 'getVistaFiltros', 'capaContenido')">Editar</button>
+                
             </ul>
-
             </div>
         </div>
     </nav>

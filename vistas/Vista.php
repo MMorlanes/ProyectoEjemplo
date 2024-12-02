@@ -1,9 +1,8 @@
 <?php
-class Vista{
-    static public function render($rutaVista, $datos=array()){
+class Vista {
+    public static function render($vista, $datos = []) {
         extract($datos);
-        require($rutaVista); // include($rutaVista);
+        require $vista;
     }
 }
-
 ?>

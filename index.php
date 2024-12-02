@@ -1,27 +1,29 @@
 <?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <link rel="stylesheet" href="../librerias/bootstrap-5.3.3-dist/css/bootstrap.min.css">
-        <script src="../librerias/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
-        <link rel="stylesheet" href="css/app.css">
-    </head>
-    <body>
-        <div class="container-fluid" id="capaEncabezado">
-            <div class="row">
-                <div class="col-md-2 col-sm-9 d-none d-sm-block">
-                    <img src="img/logo.png" style="height:5rem;">
-                </div>
-                <div class="col-md-8 d-none d-md-block divTitulo">
-                    Miguel Morlanes Turón  - DI 2024
-                </div>
-                <div class="col-md-2 col-sm-3 d-none d-sm-block">
-                    login
-                    <?php echo $_SESSION['login']; ?>
-                </div>
+
+<head>
+    <link rel="stylesheet" href="../librerias/bootstrap-5.3.3-dist/css/bootstrap.min.css">
+    <script src="../librerias/bootstrap-5.3.3-dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="css/app.css">
+</head>
+
+<body>
+    <div class="container-fluid" id="capaEncabezado">
+        <div class="row">
+            <div class="col-md-2 col-sm-9 d-none d-sm-block">
+                <img src="img/logo.png" style="height:5rem;">
+            </div>
+            <div class="col-md-8 d-none d-md-block divTitulo">
+                Miguel Morlanes Turón - DI 2024
+            </div>
+            <div class="col-md-2 col-sm-3 d-none d-sm-block">
+                login
+                <?php echo $_SESSION['login']; ?>
             </div>
         </div>
-        <!-- <div class="container-fluid" id="capaMenu">
+    </div>
+    <!-- <div class="container-fluid" id="capaMenu">
                 <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Navbar</a>
@@ -55,16 +57,18 @@
         </nav>
         </div> -->
 
-        <?php 
-        require_once 'controladores/C_Menu.php';
-        $controladorMenu = new C_Menu();
-        $controladorMenu->mostrarMenu();
-         ?>
+    <?php
+    require_once 'controladores/C_Menu.php';
+    $controladorMenu = new C_Menu();
+    $controladorMenu->mostrarMenu();
 
-        <div class="container-fluid" id="capaContenido">
-        </div>
-        
-        <script src="../ProyectoEjemplo/js/Usuarios.js" defer></script>
-        <script src="app.js" defer></script>
-    </body>
+    ?>
+
+    <div class="container-fluid" id="capaContenido">
+    </div>
+
+    <script src="../ProyectoEjemplo/js/Usuarios.js" defer></script>
+    <script src="app.js" defer></script>
+</body>
+
 </html>

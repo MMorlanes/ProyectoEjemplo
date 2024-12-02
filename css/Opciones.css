@@ -1,21 +1,3 @@
-#capaEncabezado {
-    border: 1px solid black;
-}
-
-.divTitulo {
-    text-align: center;
-    vertical-align: middle;
-    font-size: 2rem;
-}
-
-tr.usuario-activo {
-    color: black !important;
-}
-
-tr.usuario-inactivo {
-    color: red !important;
-}
-
 .container {
     display: flex;
     height: 100vh;
