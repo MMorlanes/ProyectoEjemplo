@@ -1,4 +1,3 @@
-// Función para obtener vistas de creación/edición
 function obtenerVista_EditarCrear(controlador, metodo, destinoId, id = '', params = {}) {
     const parametros = new URLSearchParams({
         controlador: controlador,
@@ -7,13 +6,27 @@ function obtenerVista_EditarCrear(controlador, metodo, destinoId, id = '', param
         ...params
     });
 
+    console.log(`🔄 Obteniendo vista: ${controlador}, método: ${metodo}, ID: ${id}`);
+
     fetch("C_Frontal.php?" + parametros.toString(), { method: "GET" })
         .then(res => res.text())
         .then(html => {
-            document.getElementById(destinoId).innerHTML = html;
+            const destino = document.getElementById(destinoId);
+            if (destino) {
+                destino.innerHTML = html.trim(); // Inserta el contenido recibido
+                console.log(`✅ Se insertó el contenido en #${destinoId}`);
+
+                // *** Solución: Forzar la visibilidad después de cargar ***
+                setTimeout(() => {
+                    destino.style.display = 'block'; // Mostrar la capa de edición
+                }, 100); // Espera 100ms para asegurar que se renderiza
+            } else {
+                console.error(`⛔ No se encontró el destino #${destinoId}`);
+            }
         })
-        .catch(err => console.error('Error al obtener la vista:', err));
+        .catch(err => console.error('❌ Error al obtener la vista:', err));
 }
+
 
 // Función para manejar la creación de una nueva opción
 function nuevaOpcion(padreId = null, nivel = 1) {
@@ -122,44 +135,63 @@ function cancelarEdicion() {
     }
 }
 
-// Función para añadir un nuevo permiso
-function nuevaPermiso(opcionId) {
+// Función para añadir un nuevo permiso sin recargar la página
+function nuevaPermiso(opcionId, botonAñadir) {
     if (!opcionId) {
         console.error('No se proporcionó un ID de opción para añadir un permiso.');
         return;
     }
+
+    if (!botonAñadir || !(botonAñadir instanceof HTMLElement)) {
+        console.error('No se proporcionó un botón válido.');
+        return;
+    }
+
+    const capaEditarCrear = document.getElementById('capaEditarCrear');
+
+    // Obtener la vista de creación del permiso
     obtenerVista_EditarCrear('Permisos', 'getVistaNuevo', 'capaEditarCrear', '', { id_Menu: opcionId });
+
+    let intervalo = setInterval(() => {
+        if (capaEditarCrear.innerHTML.trim() !== "") {
+            clearInterval(intervalo);
+            const rect = botonAñadir.getBoundingClientRect();
+            capaEditarCrear.style.top = `${window.scrollY + rect.top}px`;
+            capaEditarCrear.style.left = `${window.scrollX + rect.right + 10}px`;
+            capaEditarCrear.style.display = 'block';
+        }
+    }, 100);
 }
 
-// Función para editar un permiso
+// Función para editar un permiso sin cerrar el menú
 function editarPermiso(permisoId, botonEditar) {
     if (!permisoId) {
         console.error('No se proporcionó un ID de permiso para editar.');
         return;
     }
 
-    // Verificar si el botón existe
-    if (!botonEditar) {
+    if (!botonEditar || !(botonEditar instanceof HTMLElement)) {
         console.error('No se proporcionó un botón válido.');
         return;
     }
 
-    // Obtener la posición del botón "Editar"
-    const rect = botonEditar.getBoundingClientRect();
     const capaEditarCrear = document.getElementById('capaEditarCrear');
 
-    // Llamar a la función que obtiene la vista de edición
+    // Obtener la vista de edición del permiso
     obtenerVista_EditarCrear('Permisos', 'getVistaEditar', 'capaEditarCrear', permisoId);
 
-    // Posicionar la capa de edición a la derecha del botón
-    capaEditarCrear.style.top = `${window.scrollY + rect.top}px`; // Posición vertical
-    capaEditarCrear.style.left = `${window.scrollX + rect.right + 10}px`; // Posición horizontal (con margen de 10px)
-    capaEditarCrear.style.display = 'block'; // Mostrar el formulario
+    let intervalo = setInterval(() => {
+        if (capaEditarCrear.innerHTML.trim() !== "") {
+            clearInterval(intervalo);
+            const rect = botonEditar.getBoundingClientRect();
+            capaEditarCrear.style.top = `${window.scrollY + rect.top}px`;
+            capaEditarCrear.style.left = `${window.scrollX + rect.right + 10}px`;
+            capaEditarCrear.style.display = 'block';
+        }
+    }, 100);
 }
 
-
-
-// Función para guardar un permiso
+// Función para guardar un permiso sin recargar la página
 function guardarPermiso() {
     const formulario = document.getElementById('formularioPermiso');
     const formData = new FormData(formulario);
@@ -172,12 +204,75 @@ function guardarPermiso() {
         .then(data => {
             if (data.correcto === 'S') {
                 alert('Permiso guardado correctamente.');
-                location.reload();
+
+                const permisoId = formulario.querySelector('input[name="id"]').value;
+                const idMenu = formulario.querySelector('input[name="id_Menu"]').value;
+                const nombre = formulario.querySelector('input[name="nombre"]').value;
+                const codigo = formulario.querySelector('input[name="codigo"]').value;
+
+                if (permisoId) {
+                    // Actualizar un permiso existente
+                    const permisoElemento = document.querySelector(`button[onclick="editarPermiso(${permisoId}, this)"]`).closest('li');
+                    if (permisoElemento) {
+                        permisoElemento.querySelector('span').textContent = nombre;
+                    }
+                } else {
+                    // Añadir un nuevo permiso
+                    const listaPermisos = document.querySelector(`button[onclick="nuevaPermiso(${idMenu}, this)"]`).closest('ul');
+                    if (listaPermisos) {
+                        const nuevoPermiso = document.createElement('li');
+                        nuevoPermiso.innerHTML = `
+                            <span>${nombre}</span>
+                            <button class="edit-permiso" onclick="editarPermiso(${data.id}, this)">📝</button>
+                            <button class="delete-permiso" onclick="eliminarPermiso(${data.id})">🗑️</button>
+                        `;
+                        listaPermisos.insertBefore(nuevoPermiso, listaPermisos.lastElementChild);
+                    }
+                }
+
+                // Ocultar la capa de edición después de guardar
+                document.getElementById('capaEditarCrear').style.display = 'none';
+
             } else {
                 alert('Error al guardar el permiso: ' + data.msj);
             }
         })
         .catch(err => console.error('Error al guardar el permiso:', err));
+}
+
+
+// Función para eliminar un permiso
+function eliminarPermiso(permisoId) {
+    if (!permisoId) {
+        console.error('No se proporcionó un ID de permiso para eliminar.');
+        return;
+    }
+
+    if (!confirm('¿Estás seguro de que deseas eliminar este permiso?')) {
+        return; // Si el usuario cancela, no hace nada
+    }
+
+    const parametros = new URLSearchParams({
+        controlador: 'Permisos',
+        metodo: 'eliminarPermiso',
+        id: permisoId
+    });
+
+    fetch(`C_Frontal.php?${parametros.toString()}`, { method: 'GET' })
+        .then(res => res.json())
+        .then(data => {
+            if (data.correcto === 'S') {
+                alert('Permiso eliminado correctamente.');
+                // Remover el permiso de la interfaz después de eliminarlo
+                const permisoElemento = document.querySelector(`button[onclick="eliminarPermiso(${permisoId})"]`).closest('li');
+                if (permisoElemento) {
+                    permisoElemento.remove();
+                }
+            } else {
+                alert('Error al eliminar el permiso: ' + data.msj);
+            }
+        })
+        .catch(err => console.error('Error al eliminar el permiso:', err));
 }
 
 

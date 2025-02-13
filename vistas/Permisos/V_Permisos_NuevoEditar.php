@@ -1,4 +1,4 @@
-<div id="capaEditarCrear" style="position: absolute; display: none; z-index: 1000;">
+<div id="capaEditarCrear" style="position: absolute; display: block; z-index: 1000;">
     <form id="formularioPermiso" method="post" onsubmit="guardarPermiso(); return false;">
         <input type="hidden" name="id" value="<?= htmlspecialchars($id ?? '') ?>">
         <input type="hidden" name="id_Menu" value="<?= htmlspecialchars($id_Menu ?? '') ?>">

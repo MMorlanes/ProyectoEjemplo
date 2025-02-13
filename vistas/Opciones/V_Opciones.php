@@ -19,7 +19,7 @@ if (!function_exists('renderOpcionesTree')) {
             $html .= '<div class="opcion-row" data-id="' . $opcion['id'] . '" data-posicion="' . $opcion['posicion'] . '" data-nivel="' . $nivel_actual . '">';
             $html .= '<span>' . htmlspecialchars($opcion['nombre']) . '</span>';
             $html .= ' <button class="edit" onclick="editarOpcion(' . htmlspecialchars($opcion['id']) . ')">📝</button>';
-            $html .= ' <button class="delete" onclick="eliminarOpcion(' . htmlspecialchars($opcion['id']) . ')">🗑️</button>';
+            $html .= ' <button class="delete" onclick="eliminarOpcion(' . htmlspecialchars($opcion['id']) . ')">🗑</button>';
 
             if ($nivel_actual === 1) {
                 $html .= ' <button class="add-above" onclick="nuevaOpcionArriba(' . htmlspecialchars($opcion['id']) . ')">Añadir Arriba</button>';
@@ -29,28 +29,35 @@ if (!function_exists('renderOpcionesTree')) {
             $html .= ' <button class="add-here" onclick="nuevaOpcion(' . htmlspecialchars($opcion['id']) . ', ' . (int)($nivel_actual + 1) . ')">Añadir Hijo</button>';
             $html .= '</div>';
 
-            // Mostrar permisos debajo de cada opción
+            // ✅ Mostrar permisos debajo de cada opción
+            $html .= '<ul class="permisos">';
+            
             if (!empty($opcion['permisos'])) {
-                $html .= '<ul class="permisos">';
                 foreach ($opcion['permisos'] as $permiso) {
                     $html .= '<li>';
                     $html .= '<span>' . htmlspecialchars($permiso['nombre']) . '</span>';
                     $html .= ' <button class="edit-permiso" onclick="editarPermiso(' . htmlspecialchars($permiso['id']) . ', this)">📝</button>';
-                    $html .= ' <button class="delete-permiso" onclick="eliminarPermiso(' . htmlspecialchars($permiso['id']) . ')">🗑️</button>';
+                    $html .= ' <button class="delete-permiso" onclick="eliminarPermiso(' . htmlspecialchars($permiso['id']) . ')">🗑</button>';
                     $html .= '</li>';
                 }
-                $html .= '<li><button class="add-permiso" onclick="nuevaPermiso(' . htmlspecialchars($opcion['id']) . ')">Añadir Permiso</button></li>';
-                $html .= '</ul>';
+            } else {
+                // no hay permisos
             }
 
+            // ✅ Botón de "Añadir Permiso" siempre visible
+            $html .= '<li><button class="add-permiso" onclick="nuevaPermiso(' . htmlspecialchars($opcion['id']) . ', this)">Añadir Permiso</button></li>';
+            $html .= '</ul>'; 
+
+            // ✅ Se asegura de continuar con las subopciones correctamente
             $html .= '<div class="new-option-form" id="new-option-form-' . $opcion['id'] . '" style="display:none;"></div>';
             $html .= renderOpcionesTree($opciones, $opcion['id'], $nivel_actual + 1);
-            $html .= '</li>';
+
+            $html .= '</li>'; // Cierre correcto de cada opción
         }
-        $html .= '</ul>';
+        $html .= '</ul>'; // Cierre correcto de la lista principal
 
         return $html;
-    }
+}
 }
 ?>
 
